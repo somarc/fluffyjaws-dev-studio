@@ -248,6 +248,7 @@
     background: var(--attachment-color);
   }
 
+  .attached-workcell-bay[data-surface="vault"],
   .attached-workcell-bay[data-surface="background-commands"],
   .attached-workcell-bay[data-surface="worktree-git"] {
     grid-template-columns: minmax(0, 1fr);
@@ -255,11 +256,15 @@
     padding: var(--space-xs);
   }
 
+  .attached-workcell-bay[data-surface="vault"] .attached-workcell-index,
   .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-index,
   .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-index {
     grid-row: auto;
   }
 
+  .attached-workcell-bay[data-surface="vault"] .attached-workcell-name,
+  .attached-workcell-bay[data-surface="vault"] .attached-workcell-detail,
+  .attached-workcell-bay[data-surface="vault"] .attached-workcell-owner,
   .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-name,
   .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-detail,
   .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-owner,
@@ -269,11 +274,13 @@
     grid-column: 1;
   }
 
+  .attached-workcell-bay[data-surface="vault"] .attached-workcell-name,
   .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-name,
   .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-name {
     font-size: clamp(0.8rem, 0.7rem + 0.2cqi, 1rem);
   }
 
+  .attached-workcell-bay[data-surface="vault"] .attached-workcell-owner,
   .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-owner,
   .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-owner {
     margin-block-start: 0;
