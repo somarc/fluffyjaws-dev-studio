@@ -1,4 +1,5 @@
 .surface-ledger {
+  container: surface-ledger / inline-size;
   border-block-start: 1px solid var(--line-color);
 }
 
@@ -42,7 +43,12 @@
 .surface-ledger-title {
   max-inline-size: none;
   margin: 0;
+  font-family: var(--heading-font-family);
   font-size: var(--heading-font-size-m);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
 }
 
 .surface-ledger-detail {
@@ -60,8 +66,35 @@
   margin-block-end: 0;
 }
 
+.surface-ledger-number > :first-child,
+.surface-ledger-title > :first-child,
+.surface-ledger-meta > :first-child,
+.surface-ledger-number > .prosemirror-editor > [class~="ProseMirror"] > :first-child,
+.surface-ledger-title > .prosemirror-editor > [class~="ProseMirror"] > :first-child,
+.surface-ledger-meta > .prosemirror-editor > [class~="ProseMirror"] > :first-child {
+  margin-block: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.surface-ledger-detail > .prosemirror-editor:first-child > [class~="ProseMirror"] > :first-child {
+  margin-block-start: 0;
+}
+
+.surface-ledger-detail > .prosemirror-editor:last-child > [class~="ProseMirror"] > :last-child {
+  margin-block-end: 0;
+}
+
 .surface-ledger-meta {
   color: var(--muted-color);
+}
+
+.surface-ledger-extra {
+  grid-column: 2 / -1;
+  border-block-start: 1px solid var(--line-color);
+  padding-block-start: var(--space-xs);
+  font-size: var(--body-font-size-xs);
 }
 
 .surface-ledger.routes .surface-ledger-entry {
@@ -80,23 +113,35 @@
   line-height: 1;
 }
 
-@media (width >= 48em) {
-  .surface-ledger-entry {
+@container surface-ledger (inline-size >= 46rem) {
+  .surface-ledger:not(.routes) .surface-ledger-entry {
     grid-template-columns: 4.5rem minmax(12rem, 0.7fr) minmax(16rem, 1.4fr) minmax(8rem, 0.55fr);
     align-items: start;
     column-gap: var(--space-m);
   }
 
-  .surface-ledger-number {
+  .surface-ledger:not(.routes) .surface-ledger-number {
     grid-row: auto;
   }
 
-  .surface-ledger-meta {
+  .surface-ledger:not(.routes) .surface-ledger-meta {
     text-align: end;
   }
+}
 
+@container surface-ledger (inline-size >= 54rem) {
   .surface-ledger.routes .surface-ledger-entry {
     grid-template-columns: 4.5rem minmax(15rem, 0.95fr) minmax(18rem, 1.5fr) minmax(8rem, 0.4fr);
+    align-items: start;
+    column-gap: var(--space-m);
+  }
+
+  .surface-ledger.routes .surface-ledger-number {
+    grid-row: auto;
+  }
+
+  .surface-ledger.routes .surface-ledger-meta {
+    text-align: end;
   }
 }
 

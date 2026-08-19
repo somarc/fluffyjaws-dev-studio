@@ -10,40 +10,118 @@ function moveChildren(source, target) {
   while (source?.firstChild) target.append(source.firstChild);
 }
 
-function buildSurface(row, index) {
+function isCanvasView(block) {
+  const params = new URL(window.location.href).searchParams;
+  return params.has('quick-edit')
+    || Boolean(block.querySelector('[data-prose-index], [data-image-index]'));
+}
+
+function createEditableRegion(cell, className, fallback) {
+  const region = document.createElement('div');
+  region.className = className;
+
+  if (cell?.hasChildNodes()) {
+    moveChildren(cell, region);
+  } else {
+    const field = document.createElement('p');
+    field.textContent = fallback;
+    region.append(field);
+  }
+
+  return region;
+}
+
+function appendExtraFields(cells, surface) {
+  const extras = cells.slice(3).filter((cell) => cell.hasChildNodes());
+  if (!extras.length) return;
+
+  const region = document.createElement('div');
+  region.className = 'attached-workcell-extra';
+  extras.forEach((cell) => moveChildren(cell, region));
+  surface.append(region);
+}
+
+function buildSurface(row, index, preserveFields) {
   const cells = [...row.children];
   const title = cells[0]?.textContent.trim() || `Surface ${index + 1}`;
   const detail = cells[1]?.textContent.trim() || 'Workspace surface';
   const ownership = cells[2]?.textContent.trim() || 'Studio-managed';
-  const surface = document.createElement('button');
+  const surface = document.createElement(preserveFields ? 'div' : 'button');
   const surfaceName = slugify(title);
 
-  surface.type = 'button';
   surface.className = 'attached-workcell-bay';
   surface.dataset.surface = surfaceName;
   surface.dataset.position = String(index + 1);
-  surface.setAttribute('aria-pressed', 'false');
+  if (preserveFields) {
+    surface.classList.add('is-canvas-editable');
+  } else {
+    surface.type = 'button';
+    surface.setAttribute('aria-pressed', 'false');
+  }
 
   const indexLabel = document.createElement('span');
   indexLabel.className = 'attached-workcell-index';
   indexLabel.textContent = String(index + 1).padStart(2, '0');
 
-  const titleLabel = document.createElement('strong');
-  titleLabel.className = 'attached-workcell-name';
-  titleLabel.textContent = title;
+  let titleLabel;
+  let detailLabel;
+  let ownerLabel;
+  if (preserveFields) {
+    titleLabel = createEditableRegion(cells[0], 'attached-workcell-name', title);
+    detailLabel = createEditableRegion(cells[1], 'attached-workcell-detail', detail);
+    ownerLabel = createEditableRegion(cells[2], 'attached-workcell-owner', ownership);
+  } else {
+    titleLabel = document.createElement('strong');
+    titleLabel.className = 'attached-workcell-name';
+    titleLabel.textContent = title;
 
-  const detailLabel = document.createElement('span');
-  detailLabel.className = 'attached-workcell-detail';
-  detailLabel.textContent = detail;
+    detailLabel = document.createElement('span');
+    detailLabel.className = 'attached-workcell-detail';
+    detailLabel.textContent = detail;
 
-  const ownerLabel = document.createElement('span');
-  ownerLabel.className = 'attached-workcell-owner';
-  ownerLabel.textContent = ownership;
+    ownerLabel = document.createElement('span');
+    ownerLabel.className = 'attached-workcell-owner';
+    ownerLabel.textContent = ownership;
+  }
 
   surface.append(indexLabel, titleLabel, detailLabel, ownerLabel);
+  if (preserveFields) appendExtraFields(cells, surface);
   return {
     surface, title, detail, ownership,
   };
+}
+
+function appendEditableIntro(introRow, intro) {
+  let headingSeen = false;
+  let summarySeen = false;
+
+  [...(introRow?.children || [])].forEach((cell) => {
+    [...cell.children].forEach((field) => {
+      const semantic = field.matches('h1, h2, h3, h4, h5, h6, p, ol, ul, pre, blockquote')
+        ? field
+        : field.querySelector('h1, h2, h3, h4, h5, h6, p, ol, ul, pre, blockquote');
+      let role = 'supporting';
+
+      if (semantic?.matches('h1')) {
+        role = 'heading';
+        headingSeen = true;
+      } else if (field.querySelector('a[href]')) {
+        role = 'action';
+      } else if (!headingSeen) {
+        role = 'eyebrow';
+      } else if (!summarySeen) {
+        role = 'summary';
+        summarySeen = true;
+      }
+
+      const owner = field.classList.contains('button-field')
+        ? field
+        : document.createElement('div');
+      owner.classList.add('attached-workcell-intro-field', `is-${role}`);
+      if (owner !== field) owner.append(field);
+      intro.append(owner);
+    });
+  });
 }
 
 /**
@@ -53,11 +131,16 @@ function buildSurface(row, index) {
  * @param {HTMLElement} block The block element
  */
 export default function decorate(block) {
+  const preserveFields = isCanvasView(block);
   const rows = [...block.children];
   const introRow = rows.shift();
   const intro = document.createElement('div');
   intro.className = 'attached-workcell-intro';
-  [...(introRow?.children || [])].forEach((cell) => moveChildren(cell, intro));
+  if (preserveFields) {
+    appendEditableIntro(introRow, intro);
+  } else {
+    [...(introRow?.children || [])].forEach((cell) => moveChildren(cell, intro));
+  }
 
   const stage = document.createElement('div');
   stage.className = 'attached-workcell-stage';
@@ -91,7 +174,7 @@ export default function decorate(block) {
   tether.className = 'attached-workcell-tether';
   tether.setAttribute('aria-hidden', 'true');
 
-  const surfaces = rows.map(buildSurface);
+  const surfaces = rows.map((row, index) => buildSurface(row, index, preserveFields));
   surfaces.slice(0, 8).forEach(({ surface }) => frame.append(surface));
   frame.append(tether, gitPlane);
   stage.append(stageLabel, axis, frame, readout);
@@ -116,11 +199,15 @@ export default function decorate(block) {
     });
   };
 
-  surfaces.forEach(({ surface }) => {
-    surface.addEventListener('click', () => setActive(surface));
-  });
-
-  if (surfaces[0]) setActive(surfaces[0].surface);
+  if (preserveFields) {
+    stage.dataset.canvas = 'true';
+    readout.textContent = 'Canvas editing view / surface fields remain directly editable';
+  } else {
+    surfaces.forEach(({ surface }) => {
+      surface.addEventListener('click', () => setActive(surface));
+    });
+    if (surfaces[0]) setActive(surfaces[0].surface);
+  }
   block.replaceChildren(intro, stage);
   if (surfaces.length > 8) block.append(overflow);
 }

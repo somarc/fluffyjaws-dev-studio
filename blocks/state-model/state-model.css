@@ -47,13 +47,25 @@
   padding-block: var(--space-s);
 }
 
-.state-model-item h4 {
+.state-model-title {
   max-inline-size: none;
+  min-inline-size: 0;
   margin: 0;
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-m);
   line-height: 1.15;
   letter-spacing: -0.025em;
+}
+
+.state-model-owner {
+  grid-column: 1 / -1;
+  min-inline-size: 0;
+  font-family: var(--mono-font-family);
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .state-model-detail {
@@ -72,6 +84,26 @@
   margin-block-end: 0;
 }
 
+.state-model-owner > :first-child,
+.state-model-title > :first-child,
+.state-model-status > :first-child,
+.state-model-owner > .prosemirror-editor > [class~="ProseMirror"] > :first-child,
+.state-model-title > .prosemirror-editor > [class~="ProseMirror"] > :first-child,
+.state-model-status > .prosemirror-editor > [class~="ProseMirror"] > :first-child {
+  margin-block: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.state-model-detail > .prosemirror-editor:first-child > [class~="ProseMirror"] > :first-child {
+  margin-block-start: 0;
+}
+
+.state-model-detail > .prosemirror-editor:last-child > [class~="ProseMirror"] > :last-child {
+  margin-block-end: 0;
+}
+
 .state-model-status {
   grid-column: 1;
   grid-row: auto;
@@ -82,6 +114,13 @@
   text-align: start;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.state-model-extra {
+  grid-column: 1 / -1;
+  border-block-start: 1px solid currentcolor;
+  padding-block-start: var(--space-xs);
+  font-size: var(--body-font-size-xs);
 }
 
 @container state-model (inline-size >= 36rem) {
@@ -97,6 +136,30 @@
     grid-column: 2;
     grid-row: 1;
     text-align: end;
+  }
+
+  .state-model-item.is-canvas-editable .state-model-owner {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .state-model-item.is-canvas-editable .state-model-title {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .state-model-item.is-canvas-editable .state-model-status {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .state-model-item.is-canvas-editable .state-model-detail {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .state-model-item.is-canvas-editable .state-model-extra {
+    grid-row: 4;
   }
 }
 

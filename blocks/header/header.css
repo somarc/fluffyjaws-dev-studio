@@ -120,7 +120,10 @@ header .header .nav-tools {
 header .header nav[aria-expanded="true"] .nav-sections {
   grid-area: sections;
   display: block;
-  min-block-size: calc(100dvh - var(--nav-height));
+  block-size: calc(100dvh - var(--nav-height));
+  max-block-size: calc(100dvh - var(--nav-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border-block-start: 1px solid var(--line-color);
   padding-block: var(--space-l);
   background: var(--paper-color);
@@ -165,7 +168,10 @@ header .header .nav-sections a {
   header .header .nav-sections,
   header .header nav[aria-expanded="true"] .nav-sections {
     display: block;
-    min-block-size: 0;
+    block-size: auto;
+    max-block-size: none;
+    overflow: visible;
+    overscroll-behavior: auto;
     border: 0;
     padding: 0;
     background: transparent;

@@ -142,6 +142,22 @@ function decorateButtons(main) {
     const em = a.closest('em');
     if (!strong && !em) return;
 
+    let variant = 'secondary';
+    if (strong && em) variant = 'accent';
+    else if (strong) variant = 'primary';
+
+    let field = null;
+    if (p.hasAttribute('data-prose-index')) {
+      field = p.parentElement?.classList.contains('button-field') ? p.parentElement : null;
+      if (!field) {
+        field = document.createElement('div');
+        field.className = 'button-field';
+        p.before(field);
+        field.append(p);
+      }
+      field.dataset.buttonVariant = variant;
+    }
+
     p.className = 'button-wrapper';
     a.className = 'button';
     if (strong && em) { // high-impact call-to-action

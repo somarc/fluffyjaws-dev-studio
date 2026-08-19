@@ -42,11 +42,16 @@
   font-weight: 700;
 }
 
-.workflow-rail-step h3 {
+.workflow-rail-title {
   max-inline-size: none;
   min-inline-size: 0;
   margin: 0;
+  font-family: var(--heading-font-family);
   font-size: var(--heading-font-size-m);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
   overflow-wrap: anywhere;
 }
 
@@ -67,6 +72,26 @@
   margin-block-end: 0;
 }
 
+.workflow-rail-marker > :first-child,
+.workflow-rail-title > :first-child,
+.workflow-rail-result > :first-child,
+.workflow-rail-marker > .prosemirror-editor > [class~="ProseMirror"] > :first-child,
+.workflow-rail-title > .prosemirror-editor > [class~="ProseMirror"] > :first-child,
+.workflow-rail-result > .prosemirror-editor > [class~="ProseMirror"] > :first-child {
+  margin-block: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.workflow-rail-detail > .prosemirror-editor:first-child > [class~="ProseMirror"] > :first-child {
+  margin-block-start: 0;
+}
+
+.workflow-rail-detail > .prosemirror-editor:last-child > [class~="ProseMirror"] > :last-child {
+  margin-block-end: 0;
+}
+
 .workflow-rail-result {
   min-inline-size: 0;
   font-family: var(--mono-font-family);
@@ -75,6 +100,13 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   overflow-wrap: anywhere;
+}
+
+.workflow-rail-extra {
+  grid-column: 2 / -1;
+  border-block-start: 1px solid var(--ink-color);
+  padding-block-start: var(--space-xs);
+  font-size: var(--body-font-size-xs);
 }
 
 @container workflow-rail (inline-size >= 72rem) {
@@ -108,7 +140,7 @@
     justify-self: start;
   }
 
-  .workflow-rail-step h3 {
+  .workflow-rail-title {
     font-size: clamp(1rem, 0.9rem + 0.22cqi, 1.2rem);
   }
 }

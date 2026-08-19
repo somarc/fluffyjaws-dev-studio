@@ -2,6 +2,7 @@ import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
 
 const isDesktop = window.matchMedia('(min-width: 64em)');
+let removeDesktopListener = () => {};
 
 function setMenuState(nav, expanded) {
   const button = nav.querySelector('.nav-hamburger button');
@@ -82,7 +83,10 @@ export default async function decorate(block) {
   nav.addEventListener('focusout', (event) => {
     if (!isDesktop.matches && !nav.contains(event.relatedTarget)) setMenuState(nav, false);
   });
-  isDesktop.addEventListener('change', () => setMenuState(nav, false));
+  removeDesktopListener();
+  const handleDesktopChange = () => setMenuState(nav, false);
+  isDesktop.addEventListener('change', handleDesktopChange);
+  removeDesktopListener = () => isDesktop.removeEventListener('change', handleDesktopChange);
 
   const wrapper = document.createElement('div');
   wrapper.className = 'nav-wrapper';
