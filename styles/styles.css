@@ -373,6 +373,11 @@ main > .section.final-section h2 {
   max-inline-size: 12ch;
 }
 
+main > .section.story-intro :focus-visible,
+main > .section.final-section :focus-visible {
+  outline-color: var(--field-color);
+}
+
 main > .section .eyebrow,
 main > .section > .default-content-wrapper > p:first-child:has(strong:only-child) {
   font-family: var(--mono-font-family);
@@ -404,10 +409,11 @@ main > .section[data-section-status="loaded"] {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms;
-    animation-iteration-count: 1;
-    transition-duration: 0.01ms;
-    scroll-behavior: auto;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
