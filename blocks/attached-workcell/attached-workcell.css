@@ -112,11 +112,13 @@
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
 }
 
 .attached-workcell-detail,
 .attached-workcell-owner {
   grid-column: 2;
+  overflow-wrap: anywhere;
 }
 
 .attached-workcell-detail {
@@ -166,7 +168,7 @@
   margin-block-start: var(--space-m);
 }
 
-@container attached-workcell (inline-size >= 58rem) {
+@container attached-workcell (inline-size >= 64rem) {
   .attached-workcell {
     display: grid;
     grid-template-columns: minmax(20rem, 0.72fr) minmax(36rem, 1.28fr);
@@ -228,7 +230,7 @@
   }
 
   .attached-workcell-bay[data-surface="vault"] {
-    inset: 49% 3% 18% 75%;
+    inset: 49% 3% 16% 75%;
   }
 
   .attached-workcell-bay[data-surface="artifacts"] {
@@ -244,6 +246,37 @@
   .attached-workcell-bay[data-surface="managed-worktree"] {
     inset: 57% 24% 8% 58%;
     background: var(--attachment-color);
+  }
+
+  .attached-workcell-bay[data-surface="background-commands"],
+  .attached-workcell-bay[data-surface="worktree-git"] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+    padding: var(--space-xs);
+  }
+
+  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-index,
+  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-index {
+    grid-row: auto;
+  }
+
+  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-name,
+  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-detail,
+  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-owner,
+  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-name,
+  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-detail,
+  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-owner {
+    grid-column: 1;
+  }
+
+  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-name,
+  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-name {
+    font-size: clamp(0.8rem, 0.7rem + 0.2cqi, 1rem);
+  }
+
+  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-owner,
+  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-owner {
+    margin-block-start: 0;
   }
 
   .attached-workcell-axis {
