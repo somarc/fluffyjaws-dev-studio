@@ -1,8 +1,8 @@
 {
-  "name": "@adobe/aem-boilerplate",
+  "name": "@somarc/fluffyjaws-dev-studio",
   "private": true,
   "version": "1.3.0",
-  "description": "Starter project for Adobe Helix",
+  "description": "Public AEM Edge Delivery site for FluffyJaws Dev Studio",
   "scripts": {
     "lint:js": "eslint .",
     "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\"",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adobe/aem-boilerplate.git"
+    "url": "git+https://github.com/somarc/fluffyjaws-dev-studio.git"
   },
-  "author": "Adobe",
+  "author": "somarc",
   "license": "Apache License 2.0",
   "bugs": {
-    "url": "https://github.com/adobe/aem-boilerplate/issues"
+    "url": "https://github.com/somarc/fluffyjaws-dev-studio/issues"
   },
-  "homepage": "https://github.com/adobe/aem-boilerplate#readme",
+  "homepage": "https://main--fluffyjaws-dev-studio--somarc.aem.live/",
   "devDependencies": {
     "@babel/eslint-parser": "7.29.7",
     "eslint": "8.57.1",

@@ -50,6 +50,22 @@ async function loadFonts() {
 }
 
 /**
+ * Adds the page's primary keyboard bypass link and stable main landmark target.
+ * @param {Document} doc The page document
+ */
+function addSkipLink(doc) {
+  const main = doc.querySelector('main');
+  if (!main) return;
+  main.id ||= 'main-content';
+  if (doc.querySelector('.skip-link')) return;
+  const skipLink = doc.createElement('a');
+  skipLink.className = 'skip-link';
+  skipLink.href = `#${main.id}`;
+  skipLink.textContent = 'Skip to content';
+  doc.body.prepend(skipLink);
+}
+
+/**
  * Turns `/widgets/...` links into widget blocks.
  * @param {Element} main The container element
  */
@@ -161,6 +177,7 @@ export function decorateMain(main) {
  */
 async function loadEager(doc) {
   document.documentElement.lang = 'en';
+  addSkipLink(doc);
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
