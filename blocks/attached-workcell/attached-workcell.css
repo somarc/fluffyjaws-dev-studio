@@ -168,6 +168,26 @@
   margin-block-start: var(--space-m);
 }
 
+.attached-workcell-overflow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-s);
+  max-inline-size: 88rem;
+  margin: var(--space-l) auto 0;
+  border-block-start: 1px solid var(--ink-color);
+  padding-block-start: var(--space-m);
+}
+
+.attached-workcell-overflow-label {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--mono-font-family);
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 @container attached-workcell (inline-size >= 64rem) {
   .attached-workcell {
     display: grid;
@@ -198,92 +218,94 @@
     transform: skewY(-1.6deg);
   }
 
-  .attached-workcell-bay {
+  .attached-workcell-frame > .attached-workcell-bay {
     position: absolute;
     transform: translate(0, 0) skewY(1.6deg);
   }
 
-  .attached-workcell-bay:hover,
-  .attached-workcell-bay:focus-visible,
-  .attached-workcell-bay[aria-pressed="true"] {
+  .attached-workcell-frame > .attached-workcell-bay:hover,
+  .attached-workcell-frame > .attached-workcell-bay:focus-visible,
+  .attached-workcell-frame > .attached-workcell-bay[aria-pressed="true"] {
     transform: translate(0.25rem, 0.25rem) skewY(1.6deg);
   }
 
-  .attached-workcell-bay[data-surface="space"] {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="1"] {
     inset: 4% 37% 42% 0;
     background: var(--surface-color);
   }
 
-  .attached-workcell-bay[data-surface="conversation"] {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="2"] {
     inset: 18% 56% 53% 8%;
   }
 
-  .attached-workcell-bay[data-surface="panes"],
-  .attached-workcell-bay[data-surface="pane"] {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="3"] {
     inset: 29% 34% 36% 37%;
   }
 
-  .attached-workcell-bay[data-surface="browser"] {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="4"] {
     inset: 1% 0 56% 70%;
     background: var(--ink-color);
     color: var(--field-color);
   }
 
-  .attached-workcell-bay[data-surface="vault"] {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="5"] {
     inset: 49% 3% 16% 75%;
   }
 
-  .attached-workcell-bay[data-surface="artifacts"] {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="6"] {
     inset: 66% 43% 2% 30%;
   }
 
-  .attached-workcell-bay[data-surface="background-commands"],
-  .attached-workcell-bay[data-surface="commands"] {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="7"] {
     inset: 65% 72% 3% 3%;
   }
 
-  .attached-workcell-bay[data-surface="worktree-git"],
-  .attached-workcell-bay[data-surface="managed-worktree"] {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="8"] {
     inset: 57% 24% 8% 58%;
     background: var(--attachment-color);
   }
 
-  .attached-workcell-bay[data-surface="vault"],
-  .attached-workcell-bay[data-surface="background-commands"],
-  .attached-workcell-bay[data-surface="worktree-git"] {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="5"],
+  .attached-workcell-frame > .attached-workcell-bay[data-position="7"],
+  .attached-workcell-frame > .attached-workcell-bay[data-position="8"] {
     grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
     padding: var(--space-xs);
   }
 
-  .attached-workcell-bay[data-surface="vault"] .attached-workcell-index,
-  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-index,
-  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-index {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="5"] .attached-workcell-index,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="7"] .attached-workcell-index,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="8"] .attached-workcell-index {
     grid-row: auto;
   }
 
-  .attached-workcell-bay[data-surface="vault"] .attached-workcell-name,
-  .attached-workcell-bay[data-surface="vault"] .attached-workcell-detail,
-  .attached-workcell-bay[data-surface="vault"] .attached-workcell-owner,
-  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-name,
-  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-detail,
-  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-owner,
-  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-name,
-  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-detail,
-  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-owner {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="5"] .attached-workcell-name,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="5"] .attached-workcell-detail,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="5"] .attached-workcell-owner,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="7"] .attached-workcell-name,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="7"] .attached-workcell-detail,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="7"] .attached-workcell-owner,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="8"] .attached-workcell-name,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="8"] .attached-workcell-detail,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="8"] .attached-workcell-owner {
     grid-column: 1;
   }
 
-  .attached-workcell-bay[data-surface="vault"] .attached-workcell-name,
-  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-name,
-  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-name {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="5"] .attached-workcell-name,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="7"] .attached-workcell-name,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="8"] .attached-workcell-name {
     font-size: clamp(0.8rem, 0.7rem + 0.2cqi, 1rem);
   }
 
-  .attached-workcell-bay[data-surface="vault"] .attached-workcell-owner,
-  .attached-workcell-bay[data-surface="background-commands"] .attached-workcell-owner,
-  .attached-workcell-bay[data-surface="worktree-git"] .attached-workcell-owner {
+  .attached-workcell-frame > .attached-workcell-bay[data-position="5"] .attached-workcell-owner,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="7"] .attached-workcell-owner,
+  .attached-workcell-frame > .attached-workcell-bay[data-position="8"] .attached-workcell-owner {
     margin-block-start: 0;
+  }
+
+  .attached-workcell-overflow {
+    grid-column: 1 / -1;
+    inline-size: 100%;
   }
 
   .attached-workcell-axis {

@@ -1,4 +1,4 @@
-footer {
+footer .footer {
   border-block-start: 1px solid var(--line-color);
   background: var(--field-color);
   color: var(--ink-color);

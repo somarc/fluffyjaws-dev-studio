@@ -1,4 +1,4 @@
-header .nav-wrapper {
+header .header .nav-wrapper {
   position: fixed;
   z-index: 20;
   inset-block-start: 0;
@@ -8,7 +8,7 @@ header .nav-wrapper {
   backdrop-filter: blur(1rem);
 }
 
-header nav {
+header .header nav {
   display: grid;
   grid-template: "brand hamburger" var(--nav-height) "sections sections" auto / minmax(0, 1fr) auto;
   align-items: center;
@@ -16,16 +16,16 @@ header nav {
   margin-inline: auto;
 }
 
-header nav p {
+header .header nav p {
   margin: 0;
 }
 
-header .nav-brand {
+header .header .nav-brand {
   grid-area: brand;
   min-inline-size: 0;
 }
 
-header .nav-brand-link {
+header .header .nav-brand-link {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
@@ -39,12 +39,12 @@ header .nav-brand-link {
   text-decoration: none;
 }
 
-header .nav-brand-link:hover,
-header .nav-brand-link:focus-visible {
+header .header .nav-brand-link:hover,
+header .header .nav-brand-link:focus-visible {
   text-decoration: none;
 }
 
-header .nav-brand-link img {
+header .header .nav-brand-link img {
   inline-size: 2.5rem;
   block-size: 2.5rem;
   border: 1px solid var(--line-color);
@@ -52,11 +52,11 @@ header .nav-brand-link img {
   object-fit: cover;
 }
 
-header .nav-hamburger {
+header .header .nav-hamburger {
   grid-area: hamburger;
 }
 
-header .nav-hamburger button {
+header .header .nav-hamburger button {
   position: relative;
   inline-size: 2.75rem;
   block-size: 2.75rem;
@@ -68,9 +68,9 @@ header .nav-hamburger button {
   cursor: pointer;
 }
 
-header .nav-hamburger-icon,
-header .nav-hamburger-icon::before,
-header .nav-hamburger-icon::after {
+header .header .nav-hamburger-icon,
+header .header .nav-hamburger-icon::before,
+header .header .nav-hamburger-icon::after {
   position: absolute;
   inset-inline-start: 50%;
   inline-size: 1.2rem;
@@ -79,45 +79,45 @@ header .nav-hamburger-icon::after {
   transform: translateX(-50%);
 }
 
-header .nav-hamburger-icon {
+header .header .nav-hamburger-icon {
   inset-block-start: 50%;
 }
 
-header .nav-hamburger-icon::before,
-header .nav-hamburger-icon::after {
+header .header .nav-hamburger-icon::before,
+header .header .nav-hamburger-icon::after {
   content: "";
   inset-inline-start: 0;
   transform: none;
 }
 
-header .nav-hamburger-icon::before {
+header .header .nav-hamburger-icon::before {
   inset-block-start: -0.4rem;
 }
 
-header .nav-hamburger-icon::after {
+header .header .nav-hamburger-icon::after {
   inset-block-start: 0.4rem;
 }
 
-header nav[aria-expanded="true"] .nav-hamburger-icon {
+header .header nav[aria-expanded="true"] .nav-hamburger-icon {
   background: transparent;
 }
 
-header nav[aria-expanded="true"] .nav-hamburger-icon::before {
+header .header nav[aria-expanded="true"] .nav-hamburger-icon::before {
   inset-block-start: 0;
   transform: rotate(45deg);
 }
 
-header nav[aria-expanded="true"] .nav-hamburger-icon::after {
+header .header nav[aria-expanded="true"] .nav-hamburger-icon::after {
   inset-block-start: 0;
   transform: rotate(-45deg);
 }
 
-header .nav-sections,
-header .nav-tools {
+header .header .nav-sections,
+header .header .nav-tools {
   display: none;
 }
 
-header nav[aria-expanded="true"] .nav-sections {
+header .header nav[aria-expanded="true"] .nav-sections {
   grid-area: sections;
   display: block;
   min-block-size: calc(100dvh - var(--nav-height));
@@ -126,7 +126,7 @@ header nav[aria-expanded="true"] .nav-sections {
   background: var(--paper-color);
 }
 
-header .nav-sections ul {
+header .header .nav-sections ul {
   display: grid;
   gap: 0;
   margin: 0;
@@ -134,11 +134,11 @@ header .nav-sections ul {
   list-style: none;
 }
 
-header .nav-sections li {
+header .header .nav-sections li {
   border-block-end: 1px solid var(--line-color);
 }
 
-header .nav-sections a {
+header .header .nav-sections a {
   display: flex;
   align-items: center;
   min-block-size: 3.6rem;
@@ -151,19 +151,19 @@ header .nav-sections a {
 }
 
 @media (width >= 64em) {
-  header nav {
+  header .header nav {
     display: flex;
     justify-content: space-between;
     gap: var(--space-l);
     inline-size: min(100% - 2 * var(--space-l), var(--content-max));
   }
 
-  header .nav-hamburger {
+  header .header .nav-hamburger {
     display: none;
   }
 
-  header .nav-sections,
-  header nav[aria-expanded="true"] .nav-sections {
+  header .header .nav-sections,
+  header .header nav[aria-expanded="true"] .nav-sections {
     display: block;
     min-block-size: 0;
     border: 0;
@@ -171,17 +171,17 @@ header .nav-sections a {
     background: transparent;
   }
 
-  header .nav-sections ul {
+  header .header .nav-sections ul {
     display: flex;
     align-items: center;
     gap: var(--space-m);
   }
 
-  header .nav-sections li {
+  header .header .nav-sections li {
     border: 0;
   }
 
-  header .nav-sections a {
+  header .header .nav-sections a {
     min-block-size: 2.75rem;
     font-family: var(--mono-font-family);
     font-size: var(--body-font-size-xs);
@@ -191,17 +191,17 @@ header .nav-sections a {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  header .nav-wrapper {
+  header .header .nav-wrapper {
     background: var(--paper-color);
     backdrop-filter: none;
   }
 }
 
 @media (forced-colors: active) {
-  header .nav-wrapper,
-  header nav[aria-expanded="true"] .nav-sections,
-  header .nav-brand-link img,
-  header .nav-hamburger button {
+  header .header .nav-wrapper,
+  header .header nav[aria-expanded="true"] .nav-sections,
+  header .header .nav-brand-link img,
+  header .header .nav-hamburger button {
     background: Canvas;
     color: CanvasText;
   }

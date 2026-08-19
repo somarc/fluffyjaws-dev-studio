@@ -21,6 +21,7 @@ function buildSurface(row, index) {
   surface.type = 'button';
   surface.className = 'attached-workcell-bay';
   surface.dataset.surface = surfaceName;
+  surface.dataset.position = String(index + 1);
   surface.setAttribute('aria-pressed', 'false');
 
   const indexLabel = document.createElement('span');
@@ -60,6 +61,7 @@ export default function decorate(block) {
 
   const stage = document.createElement('div');
   stage.className = 'attached-workcell-stage';
+  stage.setAttribute('role', 'group');
   stage.setAttribute('aria-label', 'FluffyJaws Dev Studio workspace surfaces');
 
   const stageLabel = document.createElement('p');
@@ -90,9 +92,16 @@ export default function decorate(block) {
   tether.setAttribute('aria-hidden', 'true');
 
   const surfaces = rows.map(buildSurface);
-  surfaces.forEach(({ surface }) => frame.append(surface));
+  surfaces.slice(0, 8).forEach(({ surface }) => frame.append(surface));
   frame.append(tether, gitPlane);
   stage.append(stageLabel, axis, frame, readout);
+
+  const overflow = document.createElement('div');
+  overflow.className = 'attached-workcell-overflow';
+  const overflowLabel = document.createElement('p');
+  overflowLabel.className = 'attached-workcell-overflow-label';
+  overflowLabel.textContent = 'Additional authored surfaces';
+  overflow.append(overflowLabel, ...surfaces.slice(8).map(({ surface }) => surface));
 
   const setActive = (selected) => {
     surfaces.forEach(({
@@ -109,9 +118,9 @@ export default function decorate(block) {
 
   surfaces.forEach(({ surface }) => {
     surface.addEventListener('click', () => setActive(surface));
-    surface.addEventListener('focus', () => setActive(surface));
   });
 
   if (surfaces[0]) setActive(surfaces[0].surface);
   block.replaceChildren(intro, stage);
+  if (surfaces.length > 8) block.append(overflow);
 }
