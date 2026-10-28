@@ -156,8 +156,10 @@ header .header .nav-sections a {
 @media (width >= 64em) {
   header .header nav {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-l);
+    min-block-size: var(--nav-height);
     inline-size: min(100% - 2 * var(--space-l), var(--content-max));
   }
 

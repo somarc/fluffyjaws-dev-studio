@@ -13,8 +13,6 @@
   --muted-color: #55594f;
   --line-color: #11130f;
   --background-color: var(--paper-color);
-  --light-color: var(--surface-color);
-  --dark-color: var(--ink-color);
   --text-color: var(--ink-color);
   --link-color: #183f87;
   --link-hover-color: #0c2350;
@@ -31,7 +29,6 @@
   --heading-font-size-m: clamp(1.5rem, 1.25rem + 1vw, 2.4rem);
   --heading-font-size-s: clamp(1.2rem, 1.1rem + 0.45vw, 1.6rem);
   --heading-font-size-xs: 1.125rem;
-  --space-2xs: clamp(0.4rem, 0.35rem + 0.2vw, 0.6rem);
   --space-xs: clamp(0.65rem, 0.55rem + 0.35vw, 0.95rem);
   --space-s: clamp(0.9rem, 0.75rem + 0.6vw, 1.35rem);
   --space-m: clamp(1.25rem, 1rem + 1vw, 2rem);
@@ -49,8 +46,13 @@
 }
 
 html {
-  scroll-behavior: smooth;
   background: var(--paper-color);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not([quick-edit]) {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -404,8 +406,114 @@ main > .section.final-section :focus-visible {
   outline-color: var(--field-color);
 }
 
+/* Dark sections: buttons invert so they stay visible on ink. */
+main > .section:is(.story-intro, .final-section) a.button.primary {
+  background: var(--field-color);
+  color: var(--ink-color);
+  box-shadow: 0.35rem 0.35rem 0 var(--paper-color);
+}
+
+main > .section:is(.story-intro, .final-section) a.button.secondary {
+  border-color: currentcolor;
+  box-shadow: 0.35rem 0.35rem 0 var(--paper-color);
+}
+
+main > .section:is(.story-intro, .final-section) a:any-link:not(.button) {
+  color: var(--field-color);
+}
+
+/* Inner pages open on the field, like the home hero. */
+main > .section.page-intro {
+  padding-block: var(--space-xl) var(--space-l);
+  border-block-end: 1px solid var(--line-color);
+  background: var(--field-color);
+}
+
+main > .section.page-intro > .default-content-wrapper {
+  max-inline-size: var(--content-max);
+}
+
+main > .section.page-intro h1 {
+  max-inline-size: 14ch;
+  margin-block-start: var(--space-s);
+  font-size: var(--heading-font-size-xl);
+}
+
+main > .section.page-intro .default-content-wrapper > h1 + p {
+  max-inline-size: var(--reading-max);
+  font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.35rem);
+  line-height: 1.4;
+}
+
+main > .section.wiring-section {
+  border-block: 1px solid var(--line-color);
+  background: var(--surface-color);
+}
+
+main > .section.guide-teaser {
+  background: var(--field-color);
+}
+
+/* Latest release teaser (authored as a fragment link) */
+main > .section.release-teaser {
+  background: var(--attachment-color);
+}
+
+main > .section.release-teaser ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 0 var(--space-m);
+  padding: 0;
+  list-style: none;
+}
+
+main > .section.release-teaser li {
+  border-block-start: 1px solid var(--line-color);
+  padding-block: var(--space-xs);
+  font-weight: 700;
+}
+
+/* Release log: one section per release on /whats-new */
+main > .section.release {
+  padding-block: var(--space-l);
+  border-block-start: 1px solid var(--line-color);
+}
+
+main > .section.release h2 {
+  margin-block-start: 0;
+  font-size: var(--heading-font-size-l);
+}
+
+main > .section.release h3 {
+  max-inline-size: none;
+  margin-block-start: var(--space-m);
+  font-size: var(--heading-font-size-xs);
+  letter-spacing: -0.02em;
+}
+
+main > .section.release h4 {
+  margin-block-start: var(--space-m);
+  font-family: var(--mono-font-family);
+  font-size: var(--body-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+main > .section:is(.release, .release-teaser) h2 + p > em:only-child {
+  font-family: var(--mono-font-family);
+  font-size: var(--body-font-size-xs);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+main > .section.release ul {
+  padding-inline-start: 1.1em;
+  font-size: var(--body-font-size-s);
+}
+
 main > .section .eyebrow,
-main > .section > .default-content-wrapper > p:first-child:has(strong:only-child) {
+main > .section .default-content-wrapper > p:first-child:has(strong:only-child) {
   font-family: var(--mono-font-family);
   font-size: var(--body-font-size-xs);
   font-weight: 700;
@@ -428,10 +536,6 @@ main > .section[data-section-status="loaded"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
   *,
   *::before,
   *::after {

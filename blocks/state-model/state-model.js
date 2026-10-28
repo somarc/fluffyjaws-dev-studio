@@ -2,6 +2,15 @@ function moveChildren(source, target) {
   while (source?.firstChild) target.append(source.firstChild);
 }
 
+function fillFrom(cell, target, fallback) {
+  if (!cell?.textContent.trim()) {
+    target.textContent = fallback;
+    return;
+  }
+  const lone = cell.querySelector(':scope > p:only-child');
+  moveChildren(lone && lone.textContent.trim() === cell.textContent.trim() ? lone : cell, target);
+}
+
 function isCanvasView(block) {
   const params = new URL(window.location.href).searchParams;
   return params.has('quick-edit')
@@ -63,11 +72,11 @@ function buildState(row, preserveFields) {
     status = document.createElement('p');
 
     title.className = 'state-model-title';
-    title.textContent = cells[1]?.textContent.trim() || 'Workspace state';
+    fillFrom(cells[1], title, 'Workspace state');
     detail.className = 'state-model-detail';
     moveChildren(cells[2], detail);
     status.className = 'state-model-status';
-    status.textContent = cells[3]?.textContent.trim() || 'Owner declared';
+    fillFrom(cells[3], status, 'Owner declared');
     item.append(title, detail, status);
   }
   return { owner, key: ownerKey(owner), item };

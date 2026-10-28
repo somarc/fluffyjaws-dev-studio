@@ -2,6 +2,15 @@ function moveChildren(source, target) {
   while (source?.firstChild) target.append(source.firstChild);
 }
 
+function fillFrom(cell, target, fallback) {
+  if (!cell?.textContent.trim()) {
+    target.textContent = fallback;
+    return;
+  }
+  const lone = cell.querySelector(':scope > p:only-child');
+  moveChildren(lone && lone.textContent.trim() === cell.textContent.trim() ? lone : cell, target);
+}
+
 function isCanvasView(block) {
   const params = new URL(window.location.href).searchParams;
   return params.has('quick-edit')
@@ -63,13 +72,13 @@ function buildStep(row, index, preserveFields) {
     result = document.createElement('p');
 
     marker.className = 'workflow-rail-marker';
-    marker.textContent = cells[0]?.textContent.trim() || String(index + 1).padStart(2, '0');
+    fillFrom(cells[0], marker, String(index + 1).padStart(2, '0'));
     title.className = 'workflow-rail-title';
-    title.textContent = cells[1]?.textContent.trim() || `Step ${index + 1}`;
+    fillFrom(cells[1], title, `Step ${index + 1}`);
     detail.className = 'workflow-rail-detail';
     moveChildren(cells[2], detail);
     result.className = 'workflow-rail-result';
-    result.textContent = cells[3]?.textContent.trim() || 'Evidence remains visible';
+    fillFrom(cells[3], result, 'Evidence remains visible');
   }
 
   item.append(marker, title, detail, result);

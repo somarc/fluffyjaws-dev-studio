@@ -1,6 +1,16 @@
 # FluffyJaws Dev Studio
 
-Public AEM Edge Delivery site for explaining and demonstrating FluffyJaws Dev Studio—from persistent workspace basics to advanced state ownership across Git and Studio-managed surfaces.
+AEM Edge Delivery site for FluffyJaws Dev Studio, written for Adobe engineers: what Studio is, what's new in each release, how to get started, and the operating guide for state ownership across Git and Studio-managed surfaces.
+
+## Pages
+
+| Path | Content |
+| --- | --- |
+| `/` | Hero with the Attached Workcell figure and its legend, the ten surfaces, models/MCP/skills/iPhone, the latest release (fragment), and a guide teaser |
+| `/whats-new` | Every release since 0.5.2, generated from Studio's shipped release notes (`tools/whats-new/`) |
+| `/fragments/latest-release` | The newest release, shown on the home page; generated with `/whats-new` |
+| `/get-started` | Download, sign-in, providers, first space, updates |
+| `/guide` | Git-backed vs app-managed state, the operating loop, the routing test |
 
 ## Environments
 
@@ -19,6 +29,13 @@ The site’s central distinction is:
 - **App-managed Studio state** persists the workspace and routes agents toward that truth.
 
 Studio state must not become a competing copy of project truth.
+
+## Generated assets
+
+- `tools/whats-new/build.mjs` turns `<studio-repo>/build/release-notes/` into `/whats-new` and `/fragments/latest-release`. Run it after each Studio release, then upload and preview both with da-cli.
+- `tools/workcell-figure/` builds `blocks/attached-workcell/workcell-figure.svg` and `workcell-motion.js`, the hero drawing made with the `anatomy` skill. Its README explains how to rebuild it.
+
+`tools/` is not served (`.hlxignore`).
 
 ## Visual direction
 

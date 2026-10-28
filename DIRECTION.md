@@ -90,10 +90,21 @@ Claims must map to observed Studio capabilities:
 - OS-encrypted Vault credentials;
 - registered user-facing artifacts;
 - Studio-managed background commands;
-- branch-backed managed worktree attachment;
-- focused child-agent research returning to the parent conversation.
+- branch-backed managed worktree attachment, its lifecycle states and Assisted-mode merge cards;
+- focused child-agent research returning to the parent conversation;
+- Inbox Actions and wait-for-user cards for steps only a person can take;
+- agent browser tools (read, act, observe and replay a page's own API calls, traces, emulation, private tabs);
+- MCP server setup confirmed on cards; skills and repository instructions;
+- providers (FluffyJaws catalog, ChatGPT/Codex, Claude, GitHub Copilot experimental, Azure Foundry);
+- iPhone phone control, currently limited to Studio's VIP group.
+
+Release facts come from Studio's own `build/release-notes/`, through `tools/whats-new/`, never from memory.
 
 Do not imply that Studio commits automatically, that transcripts enter Git, that draft paths are private, or that app persistence is a source-control contract.
+
+## Hero object (2026-10 refresh)
+
+The Attached Workcell is now drawn as one physical machine with the `anatomy` skill (`tools/workcell-figure/`): the bench is the space, the console the conversation, docked satellites the sub-agents, a flywheel the background commands, an outward-facing screen the browser, a dial-locked drawer the Vault, a tray the artifacts, a signal flag the Inbox, and a blue cartridge tethered down to a separate dark plate is the worktree and its Git truth plane. The authored surface rows are the drawing's legend.
 
 ## Scout provenance
 

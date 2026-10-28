@@ -2,6 +2,15 @@ function moveChildren(source, target) {
   while (source?.firstChild) target.append(source.firstChild);
 }
 
+function fillFrom(cell, target, fallback) {
+  if (!cell?.textContent.trim()) {
+    target.textContent = fallback;
+    return;
+  }
+  const lone = cell.querySelector(':scope > p:only-child');
+  moveChildren(lone && lone.textContent.trim() === cell.textContent.trim() ? lone : cell, target);
+}
+
 function isCanvasView(block) {
   const params = new URL(window.location.href).searchParams;
   return params.has('quick-edit')
@@ -65,10 +74,10 @@ function createItem(row, index, preserveFields) {
     detail.className = 'surface-ledger-detail';
     meta.className = 'surface-ledger-meta';
 
-    number.textContent = cells[0]?.textContent.trim() || String(index + 1).padStart(2, '0');
-    title.textContent = cells[1]?.textContent.trim() || `Surface ${index + 1}`;
+    fillFrom(cells[0], number, String(index + 1).padStart(2, '0'));
+    fillFrom(cells[1], title, `Surface ${index + 1}`);
     moveChildren(cells[2], detail);
-    meta.textContent = cells[3]?.textContent.trim() || 'Studio surface';
+    fillFrom(cells[3], meta, 'Studio surface');
   }
 
   article.append(number, title, detail, meta);

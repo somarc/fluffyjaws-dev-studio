@@ -1,3 +1,23 @@
+const FIGURE = 'workcell-figure.svg';
+const MOTION = 'workcell-motion.js';
+
+/* Authored surface names → the figure's data-part keys. */
+const PART_ALIASES = {
+  conversations: 'conversation',
+  'sub-agents': 'agents',
+  subagents: 'agents',
+  'child-agents': 'agents',
+  'inbox-actions': 'inbox',
+  'background-commands': 'commands',
+  'worktree-git': 'worktree',
+  worktrees: 'worktree',
+  'managed-worktrees': 'worktree',
+  vaults: 'vault',
+};
+
+/* Drawing parts without their own legend row select the row they belong to. */
+const FIGURE_ALIASES = { git: 'worktree' };
+
 function slugify(value) {
   return value
     .toLowerCase()
@@ -6,20 +26,35 @@ function slugify(value) {
     .replace(/^-|-$/g, '');
 }
 
+function partKey(title) {
+  const slug = slugify(title);
+  return PART_ALIASES[slug] || slug;
+}
+
 function moveChildren(source, target) {
   while (source?.firstChild) target.append(source.firstChild);
 }
 
 function isCanvasView(block) {
-  const params = new URL(window.location.href).searchParams;
-  return params.has('quick-edit')
+  return document.documentElement.hasAttribute('quick-edit')
+    || new URLSearchParams(window.location.search).has('quick-edit')
     || Boolean(block.querySelector('[data-prose-index], [data-image-index]'));
 }
 
-function createEditableRegion(cell, className, fallback) {
+/* Published path: move the authored text into a span, never copy it. */
+function fillFrom(cell, target, fallback) {
+  if (!cell?.textContent.trim()) {
+    target.textContent = fallback;
+    return;
+  }
+  const lone = cell.querySelector(':scope > p:only-child');
+  moveChildren(lone && lone.textContent.trim() === cell.textContent.trim() ? lone : cell, target);
+}
+
+/* Canvas path: keep the authored nodes (and their editor identity) intact. */
+function editableRegion(cell, className, fallback) {
   const region = document.createElement('div');
   region.className = className;
-
   if (cell?.hasChildNodes()) {
     moveChildren(cell, region);
   } else {
@@ -27,82 +62,19 @@ function createEditableRegion(cell, className, fallback) {
     field.textContent = fallback;
     region.append(field);
   }
-
   return region;
 }
 
-function appendExtraFields(cells, surface) {
-  const extras = cells.slice(3).filter((cell) => cell.hasChildNodes());
-  if (!extras.length) return;
-
-  const region = document.createElement('div');
-  region.className = 'attached-workcell-extra';
-  extras.forEach((cell) => moveChildren(cell, region));
-  surface.append(region);
-}
-
-function buildSurface(row, index, preserveFields) {
-  const cells = [...row.children];
-  const title = cells[0]?.textContent.trim() || `Surface ${index + 1}`;
-  const detail = cells[1]?.textContent.trim() || 'Workspace surface';
-  const ownership = cells[2]?.textContent.trim() || 'Studio-managed';
-  const surface = document.createElement(preserveFields ? 'div' : 'button');
-  const surfaceName = slugify(title);
-
-  surface.className = 'attached-workcell-bay';
-  surface.dataset.surface = surfaceName;
-  surface.dataset.position = String(index + 1);
-  if (preserveFields) {
-    surface.classList.add('is-canvas-editable');
-  } else {
-    surface.type = 'button';
-    surface.setAttribute('aria-pressed', 'false');
-  }
-
-  const indexLabel = document.createElement('span');
-  indexLabel.className = 'attached-workcell-index';
-  indexLabel.textContent = String(index + 1).padStart(2, '0');
-
-  let titleLabel;
-  let detailLabel;
-  let ownerLabel;
-  if (preserveFields) {
-    titleLabel = createEditableRegion(cells[0], 'attached-workcell-name', title);
-    detailLabel = createEditableRegion(cells[1], 'attached-workcell-detail', detail);
-    ownerLabel = createEditableRegion(cells[2], 'attached-workcell-owner', ownership);
-  } else {
-    titleLabel = document.createElement('strong');
-    titleLabel.className = 'attached-workcell-name';
-    titleLabel.textContent = title;
-
-    detailLabel = document.createElement('span');
-    detailLabel.className = 'attached-workcell-detail';
-    detailLabel.textContent = detail;
-
-    ownerLabel = document.createElement('span');
-    ownerLabel.className = 'attached-workcell-owner';
-    ownerLabel.textContent = ownership;
-  }
-
-  surface.append(indexLabel, titleLabel, detailLabel, ownerLabel);
-  if (preserveFields) appendExtraFields(cells, surface);
-  return {
-    surface, title, detail, ownership,
-  };
-}
-
-function appendEditableIntro(introRow, intro) {
+function buildIntro(introRow, preserveFields) {
+  const intro = document.createElement('div');
+  intro.className = 'attached-workcell-intro';
   let headingSeen = false;
   let summarySeen = false;
 
   [...(introRow?.children || [])].forEach((cell) => {
     [...cell.children].forEach((field) => {
-      const semantic = field.matches('h1, h2, h3, h4, h5, h6, p, ol, ul, pre, blockquote')
-        ? field
-        : field.querySelector('h1, h2, h3, h4, h5, h6, p, ol, ul, pre, blockquote');
       let role = 'supporting';
-
-      if (semantic?.matches('h1')) {
+      if (field.matches('h1') || field.querySelector('h1')) {
         role = 'heading';
         headingSeen = true;
       } else if (field.querySelector('a[href]')) {
@@ -113,101 +85,156 @@ function appendEditableIntro(introRow, intro) {
         role = 'summary';
         summarySeen = true;
       }
-
-      const owner = field.classList.contains('button-field')
-        ? field
-        : document.createElement('div');
-      owner.classList.add('attached-workcell-intro-field', `is-${role}`);
-      if (owner !== field) owner.append(field);
-      intro.append(owner);
+      field.classList.add('attached-workcell-intro-field', `is-${role}`);
+      intro.append(field);
     });
   });
+
+  if (!preserveFields) {
+    /* Group the CTA paragraphs so they sit on one line. */
+    const actions = [...intro.querySelectorAll(':scope > .is-action')];
+    if (actions.length > 1) {
+      const group = document.createElement('div');
+      group.className = 'attached-workcell-actions';
+      actions[0].before(group);
+      group.append(...actions);
+    }
+  }
+  return intro;
+}
+
+function buildPart(row, index, preserveFields) {
+  const cells = [...row.children];
+  const title = cells[0]?.textContent.trim() || `Surface ${index + 1}`;
+  const key = partKey(title);
+  const item = document.createElement('li');
+  item.className = 'attached-workcell-part';
+  item.dataset.part = key;
+
+  const number = document.createElement('span');
+  number.className = 'attached-workcell-index';
+  number.setAttribute('aria-hidden', 'true');
+  number.textContent = String(index + 1).padStart(2, '0');
+
+  if (preserveFields) {
+    item.classList.add('is-canvas-editable');
+    item.append(
+      number,
+      editableRegion(cells[0], 'attached-workcell-name', title),
+      editableRegion(cells[1], 'attached-workcell-detail', 'Workspace surface'),
+      editableRegion(cells[2], 'attached-workcell-owner', 'Studio-managed'),
+    );
+    cells.slice(3).filter((cell) => cell.hasChildNodes()).forEach((cell) => {
+      item.append(editableRegion(cell, 'attached-workcell-extra', ''));
+    });
+    return { item, key };
+  }
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'attached-workcell-trigger';
+  button.setAttribute('aria-pressed', 'false');
+  const name = document.createElement('span');
+  const detail = document.createElement('span');
+  const owner = document.createElement('span');
+  name.className = 'attached-workcell-name';
+  detail.className = 'attached-workcell-detail';
+  owner.className = 'attached-workcell-owner';
+  fillFrom(cells[0], name, title);
+  fillFrom(cells[1], detail, 'Workspace surface');
+  fillFrom(cells[2], owner, 'Studio-managed');
+  button.append(number, name, detail, owner);
+  item.append(button);
+  return { item, key, button };
+}
+
+async function loadFigure(drawing) {
+  const base = `${window.hlx?.codeBasePath || ''}/blocks/attached-workcell`;
+  const response = await fetch(`${base}/${FIGURE}`);
+  if (!response.ok) throw new Error(`figure ${response.status}`);
+  const parsed = new DOMParser().parseFromString(await response.text(), 'image/svg+xml');
+  const svg = parsed.documentElement;
+  if (svg.nodeName.toLowerCase() !== 'svg') throw new Error('figure is not an svg');
+  svg.querySelectorAll('script, foreignObject').forEach((node) => node.remove());
+  const figureSvg = document.importNode(svg, true);
+  drawing.append(figureSvg);
+  return { svg: figureSvg, base };
 }
 
 /**
- * Decorates the authored surface list as one explorable Attached Workcell.
- * The first authored row remains the hero's semantic intro; every later row is
- * a real Studio surface with a title, explanation, and state owner.
+ * The Attached Workcell: the authored intro, the product drawn as one machine,
+ * and the authored surface list as the drawing's legend. Selecting a legend
+ * row (or a part of the drawing) marks that part and reads it out.
  * @param {HTMLElement} block The block element
  */
 export default function decorate(block) {
   const preserveFields = isCanvasView(block);
   const rows = [...block.children];
-  const introRow = rows.shift();
-  const intro = document.createElement('div');
-  intro.className = 'attached-workcell-intro';
-  if (preserveFields) {
-    appendEditableIntro(introRow, intro);
-  } else {
-    [...(introRow?.children || [])].forEach((cell) => moveChildren(cell, intro));
-  }
+  const intro = buildIntro(rows.shift(), preserveFields);
 
-  const stage = document.createElement('div');
-  stage.className = 'attached-workcell-stage';
-  stage.setAttribute('role', 'group');
-  stage.setAttribute('aria-label', 'FluffyJaws Dev Studio workspace surfaces');
-
-  const stageLabel = document.createElement('p');
-  stageLabel.className = 'attached-workcell-stage-label';
-  stageLabel.textContent = 'Workcell assembly / state attachment study';
-
-  const frame = document.createElement('div');
-  frame.className = 'attached-workcell-frame';
-
-  const axis = document.createElement('span');
-  axis.className = 'attached-workcell-axis';
-  axis.setAttribute('aria-hidden', 'true');
-
-  const readout = document.createElement('p');
+  const figure = document.createElement('figure');
+  figure.className = 'attached-workcell-figure';
+  const drawing = document.createElement('div');
+  drawing.className = 'attached-workcell-drawing';
+  const readout = document.createElement('figcaption');
   readout.className = 'attached-workcell-readout';
   readout.setAttribute('aria-live', 'polite');
+  figure.append(drawing, readout);
 
-  const gitPlane = document.createElement('p');
-  const gitLabel = document.createElement('strong');
-  const gitDetail = document.createElement('span');
-  gitPlane.className = 'attached-workcell-git-plane';
-  gitLabel.textContent = 'Git';
-  gitDetail.textContent = 'Durable project truth once committed';
-  gitPlane.append(gitLabel, gitDetail);
+  const legend = document.createElement('ol');
+  legend.className = 'attached-workcell-legend';
+  legend.setAttribute('aria-label', 'Studio surfaces in the drawing');
+  const parts = rows.map((row, index) => buildPart(row, index, preserveFields));
+  legend.append(...parts.map(({ item }) => item));
 
-  const tether = document.createElement('span');
-  tether.className = 'attached-workcell-tether';
-  tether.setAttribute('aria-hidden', 'true');
+  block.replaceChildren(intro, figure, legend);
 
-  const surfaces = rows.map((row, index) => buildSurface(row, index, preserveFields));
-  surfaces.slice(0, 8).forEach(({ surface }) => frame.append(surface));
-  frame.append(tether, gitPlane);
-  stage.append(stageLabel, axis, frame, readout);
-
-  const overflow = document.createElement('div');
-  overflow.className = 'attached-workcell-overflow';
-  const overflowLabel = document.createElement('p');
-  overflowLabel.className = 'attached-workcell-overflow-label';
-  overflowLabel.textContent = 'Additional authored surfaces';
-  overflow.append(overflowLabel, ...surfaces.slice(8).map(({ surface }) => surface));
-
-  const setActive = (selected) => {
-    surfaces.forEach(({
-      surface, title, detail, ownership,
-    }) => {
-      const active = surface === selected;
-      surface.setAttribute('aria-pressed', String(active));
+  let svg = null;
+  const select = (key) => {
+    parts.forEach(({ item, key: itemKey, button }) => {
+      const active = itemKey === key;
+      item.classList.toggle('is-active', active);
+      button?.setAttribute('aria-pressed', String(active));
       if (active) {
-        stage.dataset.active = surface.dataset.surface;
-        readout.textContent = `${title} — ${detail} · ${ownership}`;
+        const text = (selector) => item.querySelector(selector)?.textContent.trim() || '';
+        readout.textContent = `${text('.attached-workcell-name')} — ${text('.attached-workcell-detail')} · ${text('.attached-workcell-owner')}`;
       }
     });
+    if (!svg) return;
+    svg.dataset.active = key;
+    /* Redraw the outline on top so parts painted later never hide it. */
+    svg.querySelector(':scope > .part-outline-top')?.remove();
+    const outline = svg.querySelector(`[data-part="${key}"] .part-outline`);
+    if (outline) {
+      const top = outline.cloneNode(false);
+      top.setAttribute('class', 'part-outline-top');
+      top.setAttribute('aria-hidden', 'true');
+      svg.append(top);
+    }
   };
 
   if (preserveFields) {
-    stage.dataset.canvas = 'true';
-    readout.textContent = 'Canvas editing view / surface fields remain directly editable';
+    readout.textContent = 'Canvas editing view: the legend fields stay directly editable';
   } else {
-    surfaces.forEach(({ surface }) => {
-      surface.addEventListener('click', () => setActive(surface));
+    readout.textContent = 'Pick a surface below to find it on the bench.';
+    parts.forEach(({ key, button }) => {
+      button.addEventListener('click', () => select(key));
     });
-    if (surfaces[0]) setActive(surfaces[0].surface);
   }
-  block.replaceChildren(intro, stage);
-  if (surfaces.length > 8) block.append(overflow);
+
+  loadFigure(drawing).then(async ({ svg: loaded, base }) => {
+    svg = loaded;
+    figure.classList.add('is-loaded');
+    if (preserveFields) return;
+    svg.addEventListener('click', (event) => {
+      const part = event.target.closest?.('[data-part]')?.dataset.part;
+      const key = FIGURE_ALIASES[part] || part;
+      if (key && parts.some((item) => item.key === key)) select(key);
+    });
+    const motion = new AbortController();
+    const { default: animate } = await import(`${base}/${MOTION}`);
+    animate(svg, { signal: motion.signal });
+  }).catch(() => {
+    figure.classList.add('is-unavailable');
+  });
 }
