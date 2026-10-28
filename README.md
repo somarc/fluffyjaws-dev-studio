@@ -19,6 +19,14 @@ AEM Edge Delivery site for FluffyJaws Dev Studio, written for Adobe engineers: w
 - DA: https://da.live/#/somarc/fluffyjaws-dev-studio
 - Source: https://github.com/somarc/fluffyjaws-dev-studio
 
+## Access (Adobe only)
+
+Since 2026-10-28 the site uses EDS Site Authentication: `access.site.allow = ["*@adobe.com"]` in the Configuration Service (`/config/somarc/sites/fluffyjaws-dev-studio/access/site.json`), with no site token. Every `*.aem.page` and `*.aem.live` host returns `401 x-error: access-not-allowed` unless the visitor is signed in to the AEM Sidekick extension with an Adobe account. There is no login page and no custom error page.
+
+- Automated checks (curl, PageSpeed on pull requests) need a site token; create one only when something needs it, and never commit its value.
+- A login page like ace.bbird.live's needs a custom domain on Adobe Managed CDN with CDN OIDC (Okta) authentication in a Cloud Manager `cdn.yaml`; it is not available at the `aem.page`/`aem.live` level.
+- To reopen the site, `DELETE` that `access/site.json` resource with an admin token.
+
 ## Product thesis
 
 A coding assistant answers inside a chat. FluffyJaws Dev Studio gives the work a room: agents, terminals, an authenticated browser, background commands, artifacts, credentials, and branch-backed worktrees remain visible and coordinated without pretending they are the same kind of state.
